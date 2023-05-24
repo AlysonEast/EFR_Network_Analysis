@@ -1,0 +1,3 @@
+ReadInData.sh reads in data
+	-from GEE generated Modis GPP AUC products
+	-Bills FW3 auc products (calendar year version)
