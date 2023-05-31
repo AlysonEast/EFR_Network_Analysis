@@ -1,3 +1,14 @@
 ReadInData.sh reads in data
 	-from GEE generated Modis GPP AUC products
 	-Bills FW3 auc products (calendar year version)
+
+Corr_test.sh
+	-CORR_TEST=1
+		- Plots scatter plot between GPP and FW3 for each year. 
+	-REGRESION_FULL=1
+		- Runs a linear regression between GPP and FW3 for each year and writes out regression results to an ascii file
+	-REGRESION_PHENO=1
+		- Masks maps by phenoregion one region at a time and and runs a regression within each pheno regions and writes results to an ascci file
+	-MAP_PHENO=1
+		- Recodes the pheno region map to plot the results from REGRESSION_PHENO for R-squared values and Slopes
+
