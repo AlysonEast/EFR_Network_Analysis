@@ -2,24 +2,31 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-
 year=2020
 week=45
 
-files=`g.mlist type=rast mapset=aly_east pattern="MODIS_max_${year}*" separator=" + "`
-
-for ((n=1: n<46: n++)) do
- r.mask   maskcats=$(n)
-
-applicable_files=`files | awk -v start=$((n)) 'BEGIN {FS=" + "} {for(i=start;i<=NF;i++) printf $i" + "; print ""}'`
-
-r.mapcalc "MODIS_AUC_${year}_minint_$(n) = ${applicable_files}"
 r.mask -r
-r.null MODIS_AUC_${year}_minint_$(n) null=0
 
+g.mlist type=rast mapset=aly_east pattern="MODIS_max_${year}*" separator="newline" | sort --version-sort >temp
+
+for((n=1; n<46; n++)) do
+echo "processing week $((n))"
+r.mask minint maskcats=$((n)) --o
+
+ applicable_files=`awk -v start=$((n)) 'NR >= start && NR <=45' temp | tr "\n" "+" | rev | cut -c2- | rev`
+
+r.mapcalc "MODIS_AUC_${year}_minint_$((n)) = ${applicable_files}"
+r.mask -r
+r.null MODIS_AUC_${year}_minint_$((n)) null=0
 done
 
-minint_steps=`g.mlist type=rast mapset=aly_east pattern="MODIS_max_${year}*" separator=" + "`
+minint_steps=`g.mlist type=rast mapset=aly_east pattern="MODIS_AUC_${year}_minint*" separator="+"`
 
 r.mapcalc "MODIS_AUC_${year} = ${minint_steps}"
+
+r.reclass input=MODIS_AUC_${year} output=MODIS_mask_${year} rules=./reclass_annual --o
+r.mask MODIS_mask_2020 --o
+r.mapcalc "MODIS_AUC_${year} = ${minint_steps}"
+
+r.null map=MODIS_AUC_${year} setnull=0
 
