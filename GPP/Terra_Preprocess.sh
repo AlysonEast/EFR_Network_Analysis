@@ -1,14 +1,12 @@
-#!/bin/bash
+#!/bin/bash                                                                                                                                 
 
 export GISRC=/home/1te/.grassrc6.data
 
-PROCESS_HDF_FILES=0
-MOSAIC_BY_DATES=0
-FIND_DATEWISE_MAX=0
-DO_ANNUAL_AUC_AND_RECLAC_DATEWISEMAX=1
+PROCESS_HDF_FILES=1
+MOSAIC_BY_DATES=1
 
-year=2020
-version=aqua
+
+version=terra
 code=MOD17A2H
 
 if [ $PROCESS_HDF_FILES -eq 1 ]
@@ -56,26 +54,4 @@ g.mremove rast=`g.mlist type=rast pattern="${version}*${date}*" separator=","` -
 done
 fi
 ##############################################################
-if [ $FIND_DATEWISE_MAX -eq 1 ]
-then
-for((n=1; n<46; n++)) do
-r.mapcalc "MODIS_max_${year}_$((n)) = max(MODIS_terra_${year}_$((n)), MODIS_aqua_${year}_$((n)))"
-g.mremove rast=MODIS_terra_${year}_$((n)),MODIS_aqua_${year}_$((n)) -f
-done
-fi
-####################################################################
-if [ $DO_ANNUAL_AUC_AND_RECLAC_DATEWISEMAX -eq 1 ]
-then
-r.mask -r
-r.mapcalc "MODIS_CalYear_AUC_${year} = `g.mlist type=rast pattern="MODIS_max_${year}*" separator="+"`"
 
-
-#r.reclass input=MODIS_CalYear_AUC_${year} output=MODIS_mask_${year} rules=./reclass_annual --o
-
-#r.mask MODIS_mask_${year} --o
-
-#for((n=1; n<46; n++)) do
-#r.mapcalc "MODIS_max_${year}_$((n)) = max(MODIS_terra_${year}_$((n)), MODIS_aqua_${year}_$((n)))" 
-#done
-
-fi

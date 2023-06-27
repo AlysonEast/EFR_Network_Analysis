@@ -24,9 +24,4 @@ minint_steps=`g.mlist type=rast mapset=aly_east pattern="MODIS_AUC_${year}_minin
 
 r.mapcalc "MODIS_AUC_${year} = ${minint_steps}"
 
-r.reclass input=MODIS_AUC_${year} output=MODIS_mask_${year} rules=./reclass_annual --o
-r.mask MODIS_mask_2020 --o
-r.mapcalc "MODIS_AUC_${year} = ${minint_steps}"
-
 r.null map=MODIS_AUC_${year} setnull=0
-
