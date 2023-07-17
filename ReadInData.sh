@@ -3,7 +3,9 @@
 export GISRC=/home/1te/.grassrc6.data
 
 GEE_FILES_IN=0
-FW3_REPROJECT=1
+FW3_REPROJECT=0
+NLCD_IN=0
+TORNADO_IN=1
 
 #############################################################                                                       
 if [ $GEE_FILES_IN -eq 1 ]
@@ -46,7 +48,28 @@ d.rast 2021.trueS3.S3?-NT.napolygon.maxndvi.LAEA.rseriessum.45
  r.proj input=fakeS3laea.maxMODIS.2015.std.rseriessum.45 location=CONUS_Phenology_LAEA mapset=FW_auc --o
  r.proj input=fakeS3laea.maxMODIS.2014.std.rseriessum.45 location=CONUS_Phenology_LAEA mapset=FW_auc --o
 
- r.proj input=phenology_2000-2016.500.maxmode location=CONUS_Phenology_LAEA mapset=phenoregions --o
+ r.proj input=phenology_2000-2016.100.maxmode location=CONUS_Phenology_LAEA mapset=phenoregions --o
+
+r.proj input=minint location=CONUS_Phenology_LAEA mapset=FW_auc --o
 
 fi
 
+#############################################################                                                       
+if [ $NLCD_IN -eq 1 ]
+then
+
+ g.region rast=wc2.0_bio_30s_01_ann_temp
+ g.region res=00:00:15
+
+r.in.gdal input=./data/NLCD_2019.tif output=NLCD_2019_500m
+fi
+###########################################################
+if [ $TORNADO_IN -eq 1 ]
+then
+
+ g.region rast=wc2.0_bio_30s_01_ann_temp
+ g.region res=00:00:15
+
+v.in.ogr dsn=./data/ layer=Tornado_Tracks type=line where="yr > '2018'" output=Tornado_Tracks_2019to2023 --o
+fi
+###########################################################
