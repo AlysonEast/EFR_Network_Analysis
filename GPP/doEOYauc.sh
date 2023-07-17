@@ -2,7 +2,7 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-year=2020
+year=2018
 week=45
 
 r.mask -r
@@ -22,6 +22,8 @@ done
 
 minint_steps=`g.mlist type=rast mapset=aly_east pattern="MODIS_AUC_${year}_minint*" separator="+"`
 
-r.mapcalc "MODIS_AUC_${year} = ${minint_steps}"
+r.mapcalc "MODIS_EOY_AUC_${year} = ${minint_steps}"
 
 r.null map=MODIS_AUC_${year} setnull=0
+
+g.mremove rast=`g.mlist type=rast mapset=aly_east pattern="MODIS_AUC_${year}_minint*" separator=","` -f

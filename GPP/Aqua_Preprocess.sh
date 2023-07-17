@@ -2,7 +2,7 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-PROCESS_HDF_FILES=1
+PROCESS_HDF_FILES=0
 MOSAIC_BY_DATES=1
 
 
@@ -36,19 +36,16 @@ done
 
 #make list of dates
 ls ./${version}/${year}/*.tif | grep "A${year}" | awk 'BEGIN {FS="."} {print $3}' | sort -u >tmp
+num=`wc -l tmp | awk '{print $1}'`
 
 #loop over list of dates to make mosaics
-for ((n=1; n<46; n++)) do
+for ((n=1; n<${num}; n++)) do
 date=`sed -n "$((n))"p tmp`
 echo "mosaicing ${date}"
 
 r.patch input=`g.mlist type=rast pattern="${version}*${date}*" separator=","` output=MODIS_${version}_${year}_$((n)) --o
 r.null map=MODIS_${version}_${year}_$((n)) setnull=32767,32766,32765,32764,32763,32762,32761
 
-#r.reclass input=MODIS_${version}_${year}_tmp output=temp_mask rules=./reclass --o
-
-#r.mask input=temp_mask --o
-#r.mapcalc "MODIS_${version}_${year}_$((n)) = MODIS_${version}_${year}_tmp"
 
 g.mremove rast=`g.mlist type=rast pattern="${version}*${date}*" separator=","` -f
 done
