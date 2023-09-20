@@ -20,12 +20,14 @@ echo "Processing $f file..."
  gdalwarp -of GTIFF -s_srs '+proj=sinu +R=6371007.181 +nadgrids=@null +wktext' -r near -t_srs '+proj=longlat +datum=WGS84 +no_defs' ${f}_step.tif ${f}.tif
 
 rm ${f}_step.tif
+rm ${f}
 
 done
 fi
 #####################################################################3
 if [ $MOSAIC_BY_DATES -eq 1 ]
 then
+g.region rast=MODIS_CalYear_AUC_2017 
 r.mask -r
 
 for myfile in `ls ./${version}/${year}/*.tif | awk 'BEGIN {FS="/"} {print $4}'`
@@ -36,15 +38,18 @@ done
 
 #make list of dates
 ls ./${version}/${year}/*.tif | grep "A${year}" | awk 'BEGIN {FS="."} {print $3}' | sort -u >tmp
+Rscript date_key.R ${version} ${year}
+sed -i 's/"//g' ./keys/date_key_${version}_${year}.txt
 num=`wc -l tmp | awk '{print $1}'`
 
 #loop over list of dates to make mosaics
 for ((n=1; n<${num}; n++)) do
 date=`sed -n "$((n))"p tmp`
+date_format=`sed -n "$((n+1))"p ./keys/date_key_${version}_${year}.txt | awk 'BEGIN {FS="|";} {print $3}'`
 echo "mosaicing ${date}"
 
-r.patch input=`g.mlist type=rast pattern="${version}*${date}*" separator=","` output=MODIS_${version}_${year}_$((n)) --o
-r.null map=MODIS_${version}_${year}_$((n)) setnull=32767,32766,32765,32764,32763,32762,32761
+r.patch input=`g.mlist type=rast pattern="${version}*${date}*" separator=","` output=MODIS_${version}_${year}_${date_format} --o
+r.null map=MODIS_${version}_${year}_${date_format} setnull=32767,32766,32765,32764,32763,32762,32761
 
 
 g.mremove rast=`g.mlist type=rast pattern="${version}*${date}*" separator=","` -f

@@ -4,12 +4,14 @@ export GISRC=/home/1te/.grassrc6.data
 
 currYEAR=2023
 currint=5
+currdate=`sed -n "$((${currint}+1))"p ./keys/date_key_aqua_${currYEAR}.txt | awk 'BEGIN {FS="|";} {print $3}'`
 
 year1ago=$((${currYEAR}-1))
 year2ago=$((${currYEAR}-2))
 year3ago=$((${currYEAR}-3))
 year4ago=$((${currYEAR}-4))
 year5ago=$((${currYEAR}-5))
+
 nextint=$((${currint}+1))
 
 echo ${year1ago}
@@ -23,25 +25,25 @@ year_to_date=`awk -v end=${currint} 'NR >= 1 && NR <= end' temp | tr "\n" "+" | 
 
 #minint < currint
 r.mask minint maskcats="1 thru ${currint}" --o
-r.mapcalc "MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 = ${year_to_date}"
-r.null MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 null=0
+r.mapcalc "MODIS_1yr_AUC_wk${currdate}_step1 = ${year_to_date}"
+r.null MODIS_1yr_AUC_wk${currdate}_step1 null=0
 
-r.mapcalc "MODIS_3yr_AUC_wk${currint}_${currYEAR}_step1 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_EOY_AUC_${year2ago}"
-r.null MODIS_3yr_AUC_wk${currint}_${currYEAR}_step1 null=0
+r.mapcalc "MODIS_3yr_AUC_wk${currdate}_step1 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_EOY_AUC_${year2ago}"
+r.null MODIS_3yr_AUC_wk${currdate}_step1 null=0
 
-r.mapcalc "MODIS_5yr_AUC_wk${currint}_${currYEAR}_step1 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_EOY_AUC_${year4ago}"
-r.null MODIS_5yr_AUC_wk${currint}_${currYEAR}_step1 null=0
+r.mapcalc "MODIS_5yr_AUC_wk${currdate}_step1 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_EOY_AUC_${year4ago}"
+r.null MODIS_5yr_AUC_wk${currdate}_step1 null=0
 
 #minint > currint
 r.mask minint maskcats="${nextint} thru 45" --o
-r.mapcalc "MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2 = ${year_to_date} + MODIS_EOY_AUC_${year1ago}"
-r.null MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2 null=0
+r.mapcalc "MODIS_1yr_AUC_wk${currdate}_step2 = ${year_to_date} + MODIS_EOY_AUC_${year1ago}"
+r.null MODIS_1yr_AUC_wk${currdate}_step2 null=0
 
-r.mapcalc "MODIS_3yr_AUC_wk${currint}_${currYEAR}_step2 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_EOY_AUC_${year3ago}"
-r.null MODIS_3yr_AUC_wk${currint}_${currYEAR}_step2 null=0
+r.mapcalc "MODIS_3yr_AUC_wk${currdate}_step2 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_EOY_AUC_${year3ago}"
+r.null MODIS_3yr_AUC_wk${currdate}_step2 null=0
 
-r.mapcalc "MODIS_5yr_AUC_wk${currint}_${currYEAR}_step2 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} +  MODIS_CalYear_AUC_${year4ago} + MODIS_EOY_AUC_${year5ago}"
-r.null MODIS_5yr_AUC_wk${currint}_${currYEAR}_step2 null=0
+r.mapcalc "MODIS_5yr_AUC_wk${currdate}_step2 = ${year_to_date} + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} +  MODIS_CalYear_AUC_${year4ago} + MODIS_EOY_AUC_${year5ago}"
+r.null MODIS_5yr_AUC_wk${currdate}_step2 null=0
 
 #Put it all together
 r.mask -r
