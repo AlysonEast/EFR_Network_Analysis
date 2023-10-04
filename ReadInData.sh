@@ -5,7 +5,8 @@ export GISRC=/home/1te/.grassrc6.data
 GEE_FILES_IN=0
 FW3_REPROJECT=0
 NLCD_IN=0
-TORNADO_IN=1
+TORNADO_IN=0
+NEW_IN=1
 
 #############################################################                                                       
 if [ $GEE_FILES_IN -eq 1 ]
@@ -72,4 +73,15 @@ then
 
 v.in.ogr dsn=./data/ layer=Tornado_Tracks type=line where="yr > '2018'" output=Tornado_Tracks_2019to2023 --o
 fi
-###########################################################
+#####################################################################                                                       
+if [ $NEW_IN -eq 1 ]
+then
+ g.region rast=wc2.0_bio_30s_01_ann_temp
+ g.region res=00:00:15
+
+for((v=2014; v<2022; v++)) do
+ r.proj input=${v}.pheno.wholeyear.partialsum location=CONUS_Phenology_LAEA mapset=FW_auc --o
+ r.proj input=${v}.S3.wholeyear.partialsum location=CONUS_Phenology_LAEA mapset=FW_auc --o
+done
+fi
+###################################################
