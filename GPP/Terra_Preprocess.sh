@@ -9,6 +9,7 @@ MOSAIC_BY_DATES=1
 version=terra
 code=MOD17A2H
 
+
 if [ $PROCESS_HDF_FILES -eq 1 ]
 then
 
