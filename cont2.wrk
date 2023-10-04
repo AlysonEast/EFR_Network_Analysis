@@ -1,0 +1,15 @@
+set pm3d explicit
+set view map
+set contour base
+set cntrparam cubicspline
+set dgrid3d 80,80
+set cntrparam levels 25
+unset surface
+unset key
+f1(x) = m*x + i
+fit f1(x) "compare_tmp" using 1:2:(1/$3) via m, i
+title_f1(m,i) = sprintf('f1(x) = %.3fx + %.3f',m,i)
+set print "linearcoeffs.dat" append
+print m, i
+set print
+splot x*y
