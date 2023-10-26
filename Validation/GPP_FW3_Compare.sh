@@ -1,16 +1,37 @@
 
-## S3
-# 2023 4 year product
-# 2022 3 year product
-# 2021 2 year product
-# 2020 1 year product
+## 
+week=03.16, 05.17, 07.28, 10.08, 12.19
+year_list=20, 19, 18, 22, 21, 21, 19, 18, 20, 22, 22, 18, 21, 19, 20, 18, 20, 21, 19, 22, 21, 20, 19, 22, 18
+product=5,5,5,5,5,4,4,4,4,4,3,3,3,3,3,2,2,2,2,2,1,1,1,1,1
 
-#Fake S3
-# 2019 5 year product
-# 2018 4 year product
-# 2017 3 year product
-# 2016 2 year product
-# 2015 1 year product
+r.stats -1gn input= MODIS_5yr_AUC_wk2020.03.06_2020,/
+MODIS_5yr_AUC_wk2019.05.17_2019,/
+MODIS_5yr_AUC_wk2018.07.28_2018,/
+MODIS_5yr_AUC_wk2022.10.08_2022,/
+MODIS_5yr_AUC_wk2021.12.19_2021,/
+MODIS_4yr_AUC_wk2021.03.06_2021,/
+MODIS_4yr_AUC_wk2019.05.17_2019,/
+MODIS_4yr_AUC_wk2018.07.28_2018,/
+MODIS_4yr_AUC_wk2020.10.08_2020,/
+MODIS_4yr_AUC_wk2022.12.19_2022,/
+MODIS_3yr_AUC_wk2022.03.06_2022,/
+MODIS_3yr_AUC_wk2018.05.17_2018,/
+MODIS_3yr_AUC_wk2021.07.28_2021,/
+MODIS_3yr_AUC_wk2019.10.08_2019,/
+MODIS_3yr_AUC_wk2020.12.19_2020,/
+MODIS_2yr_AUC_wk2018.03.06_2018,/
+MODIS_2yr_AUC_wk2020.05.17_2020,/
+MODIS_2yr_AUC_wk2021.07.28_2021,/
+MODIS_2yr_AUC_wk2019.10.08_2019,/
+MODIS_2yr_AUC_wk2022.12.19_2022,/
+MODIS_1yr_AUC_wk2021.03.06_2021,/
+MODIS_1yr_AUC_wk2020.05.17_2020,/
+MODIS_1yr_AUC_wk2019.07.28_2019,/
+MODIS_1yr_AUC_wk2022.10.08_2022,/
+MODIS_1yr_AUC_wk2018.12.19_2018,/
+pheno>GPP_data.out
+
+
 
 # 25 Phenoregion classes
 
