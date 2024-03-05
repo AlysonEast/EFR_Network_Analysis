@@ -2,14 +2,15 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-INDIVIDUAL_PRODUCT=1
+INDIVIDUAL_PRODUCT=0
 ALL_PRODUCTS_FOR_DATE=0
+FROM_TMP=1
 
 #############################################################
 if [ $INDIVIDUAL_PRODUCT -eq 1 ]
 then
 
-product=5yr
+product=1yr
 
 list=`ls /home/hnw/S3/prod/ -1 | grep auc${product}departure.LAEA | tr '\n' ' '`
 
@@ -27,5 +28,16 @@ list=`ls /home/hnw/S3/prod/ -1 | grep auc | grep departure.LAEA | grep ${week} |
 
 cd /home/hnw/S3/prod/
 zip /mnt/poseidon/remotesensing/1te/FW3/FW${week}download.zip ${list}
+
+fi
+################################################################
+if [ $FROM_TMP -eq 1 ]
+then
+
+
+list=`ls /mnt/poseidon/remotesensing/forwarn/net_ecological_impact/hnw_notprod/ -1 | grep auc | tr '\n' ' '`
+
+cd /mnt/poseidon/remotesensing/forwarn/net_ecological_impact/hnw_notprod
+zip -m /mnt/poseidon/remotesensing/1te/FW3/FW_wnc_download.zip ${list}
 
 fi
