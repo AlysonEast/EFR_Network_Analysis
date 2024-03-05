@@ -2,7 +2,7 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-PROCESS_HDF_FILES=0
+PROCESS_HDF_FILES=1
 MOSAIC_BY_DATES=1
 
 

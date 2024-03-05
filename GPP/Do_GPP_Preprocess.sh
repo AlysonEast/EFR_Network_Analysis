@@ -4,12 +4,13 @@ export GISRC=/home/1te/.grassrc6.data
 
 FIND_DATEWISE_MAX=1
 
-year=2015
+year=2014
 
 export year
 
-./Terra_Preprocess.sh
 ./Aqua_Preprocess.sh
+
+./Terra_Preprocess.sh
 
 ##############################################################
 if [ $FIND_DATEWISE_MAX -eq 1 ]

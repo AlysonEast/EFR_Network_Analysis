@@ -2,7 +2,7 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-currYEAR=2022
+currYEAR=2019
 #currint=5
 currdate=`sed -n "$((${currint}+1))"p ./keys/date_key_${currYEAR}.txt | awk 'BEGIN {FS="|";} {print $3}'`
 echo "year: $currYEAR"
@@ -15,6 +15,7 @@ year2ago=$((${currYEAR}-2))
 year3ago=$((${currYEAR}-3))
 year4ago=$((${currYEAR}-4))
 year5ago=$((${currYEAR}-5))
+year6ago=$((${currYEAR}-6))
 
 nextint=$((${currint}+1))
 
@@ -49,38 +50,45 @@ echo "minint steps are $minint_steps"
 
  r.mask minint maskcats="1 thru ${currint}" --o
 
-echo "Calculating 1yr for 1 thru ${currint} cells"
-r.mapcalc "MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 = ${minint_steps}"
+echo "Calculating 0yr for 1 thru ${currint} cells"
+r.mapcalc "MODIS_0yr_AUC_wk${currint}_${currYEAR}_step1 = ${minint_steps}"
 g.mremove rast=`g.mlist type=rast mapset=aly_east pattern="MODIS_AUC_${currYEAR}_minint*" separator=","` -f
 
+echo "Calculating 1yr for 1 thru ${currint} cells"
+r.mapcalc "MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_EOY_AUC_${year1ago}"
 echo "Calculating 2yr for 1 thru ${currint} cells"
-r.mapcalc "MODIS_2yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_EOY_AUC_${year1ago}"
+r.mapcalc "MODIS_2yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_EOY_AUC_${year2ago}"
 echo "Calculating 3yr for 1 thru ${currint} cells"
-r.mapcalc "MODIS_3yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_EOY_AUC_${year2ago}"
+r.mapcalc "MODIS_3yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_EOY_AUC_${year3ago}"
 echo "Calculating 4yr for 1 thru ${currint} cells"
-r.mapcalc "MODIS_4yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_EOY_AUC_${year3ago}"
+r.mapcalc "MODIS_4yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_EOY_AUC_${year4ago}"
 echo "Calculating 5yr for 1 thru ${currint} cells"
-r.mapcalc "MODIS_5yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_EOY_AUC_${year4ago}"
+r.mapcalc "MODIS_5yr_AUC_wk${currint}_${currYEAR}_step1 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_CalYear_AUC_${year4ago} + MODIS_EOY_AUC_${year5ago}"
 
  r.mask minint maskcats="${nextint} thru 45" --o
 
+echo "Calculating 0yr for ${nextint} thru 45 cells"
+r.mapcalc "MODIS_0yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_EOY_AUC_${year1ago}"
 echo "Calculating 1yr for ${nextint} thru 45 cells"
-r.mapcalc "MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_EOY_AUC_${year1ago}"
+r.mapcalc "MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_EOY_AUC_${year2ago}"
 echo "Calculating 2yr for ${nextint} thru 45 cells"
-r.mapcalc "MODIS_2yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_EOY_AUC_${year2ago}"
+r.mapcalc "MODIS_2yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_EOY_AUC_${year3ago}"
 echo "Calculating 3yr for ${nextint} thru 45 cells"
-r.mapcalc "MODIS_3yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_EOY_AUC_${year3ago}"
+r.mapcalc "MODIS_3yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_EOY_AUC_${year4ago}"
 echo "Calculating 4yr for ${nextint} thru 45 cells"
-r.mapcalc "MODIS_4yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} + MODIS_EOY_AUC_${year4ago}"
+r.mapcalc "MODIS_4yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} +  MODIS_CalYear_AUC_${year4ago} + MODIS_EOY_AUC_${year5ago}"
 echo "Calculating 5yr for ${nextint} thru 45 cells"
-r.mapcalc "MODIS_5yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} +  MODIS_CalYear_AUC_${year4ago} + MODIS_EOY_AUC_${year5ago}"
+r.mapcalc "MODIS_5yr_AUC_wk${currint}_${currYEAR}_step2 = year_to_date + MODIS_CalYear_AUC_${year1ago} + MODIS_CalYear_AUC_${year2ago} + MODIS_CalYear_AUC_${year3ago} +  MODIS_CalYear_AUC_${year4ago} + MODIS_CalYear_AUC_${year5ago} + MODIS_EOY_AUC_${year6ago}"
 
  r.mask -r
+r.null map=MODIS_0yr_AUC_wk${currint}_${currYEAR}_step1 null=0
 r.null map=MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 null=0
 r.null map=MODIS_2yr_AUC_wk${currint}_${currYEAR}_step1 null=0
 r.null map=MODIS_3yr_AUC_wk${currint}_${currYEAR}_step1 null=0
 r.null map=MODIS_4yr_AUC_wk${currint}_${currYEAR}_step1 null=0
 r.null map=MODIS_5yr_AUC_wk${currint}_${currYEAR}_step1 null=0
+
+r.null map=MODIS_0yr_AUC_wk${currint}_${currYEAR}_step2 null=0
 r.null map=MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2 null=0
 r.null map=MODIS_2yr_AUC_wk${currint}_${currYEAR}_step2 null=0
 r.null map=MODIS_3yr_AUC_wk${currint}_${currYEAR}_step2 null=0
@@ -88,7 +96,10 @@ r.null map=MODIS_4yr_AUC_wk${currint}_${currYEAR}_step2 null=0
 r.null map=MODIS_5yr_AUC_wk${currint}_${currYEAR}_step2 null=0
 
 #Put it all together
+echo "Calculating 0yr AUC for ${currdate}"
+r.mapcalc "MODIS_0yr_AUC_wk${currdate}_${currYEAR} = MODIS_0yr_AUC_wk${currint}_${currYEAR}_step1 + MODIS_0yr_AUC_wk${currint}_${currYEAR}_step2"
 echo "Calculating 1yr AUC for ${currdate}"
+r.mapcalc "MODIS_1yr_AUC_wk${currdate}_${currYEAR} = MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 + MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2"
 r.mapcalc "MODIS_1yr_AUC_wk${currdate}_${currYEAR} = MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1 + MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2"
 echo "Calculating 2yr AUC for ${currdate}"
 r.mapcalc "MODIS_2yr_AUC_wk${currdate}_${currYEAR} = MODIS_2yr_AUC_wk${currint}_${currYEAR}_step1 + MODIS_2yr_AUC_wk${currint}_${currYEAR}_step2"
@@ -99,6 +110,7 @@ r.mapcalc "MODIS_4yr_AUC_wk${currdate}_${currYEAR} = MODIS_4yr_AUC_wk${currint}_
 echo "Calculating 5yr AUC for ${currdate}"
 r.mapcalc "MODIS_5yr_AUC_wk${currdate}_${currYEAR} = MODIS_5yr_AUC_wk${currint}_${currYEAR}_step1 + MODIS_5yr_AUC_wk${currint}_${currYEAR}_step2"
 
+g.mremove rast=MODIS_0yr_AUC_wk${currint}_${currYEAR}_step1,MODIS_0yr_AUC_wk${currint}_${currYEAR}_step2 -f
 g.mremove rast=MODIS_1yr_AUC_wk${currint}_${currYEAR}_step1,MODIS_1yr_AUC_wk${currint}_${currYEAR}_step2 -f
 g.mremove rast=MODIS_2yr_AUC_wk${currint}_${currYEAR}_step1,MODIS_2yr_AUC_wk${currint}_${currYEAR}_step2 -f
 g.mremove rast=MODIS_3yr_AUC_wk${currint}_${currYEAR}_step1,MODIS_3yr_AUC_wk${currint}_${currYEAR}_step2 -f
