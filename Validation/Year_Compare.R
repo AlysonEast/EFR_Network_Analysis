@@ -40,7 +40,7 @@ get_density <- function(x, y, ...) {
 
 df$density<-get_density(df$GPP, df$FW3, n=100)
 
-png("./rplot.png", width=9, height=9, units="in", res=300)
+png("./rplot.png", width=12, height=9, units="in", res=300)
 ggplot(df, aes(x=GPP, y=FW3, col=density), alpha=0.5) + geom_point() 
 dev.off()
 
