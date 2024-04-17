@@ -2,7 +2,7 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-currYEAR=2019
+currYEAR=2018
 #currint=5
 currdate=`sed -n "$((${currint}+1))"p ./keys/date_key_${currYEAR}.txt | awk 'BEGIN {FS="|";} {print $3}'`
 echo "year: $currYEAR"
