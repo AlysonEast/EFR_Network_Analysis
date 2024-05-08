@@ -53,7 +53,7 @@ model = xgb.train(
    num_boost_round=n,
 )
 
-model.save_model("wnc_model.json")
+model.save_model("CONUS_2023_model.json")
 
 from sklearn.metrics import mean_squared_error
 
@@ -68,25 +68,7 @@ print(f"RMSE of the base model: {rmse:.3f}")
 
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
-import mpl_scatter_density # adds projection='scatter_density'
-from matplotlib.colors import LinearSegmentedColormap
-
-# "Viridis-like" colormap with white background
-white_viridis = LinearSegmentedColormap.from_list('white_viridis', [
-    (0, '#ffffff'),
-    (1e-20, '#440053'),
-    (0.2, '#404388'),
-    (0.4, '#2a788e'),
-    (0.6, '#21a784'),
-    (0.8, '#78d151'),
-    (1, '#fde624'),
-], N=256)
-
-def using_mpl_scatter_density(fig, x, y):
-    ax = fig.add_subplot(1, 1, 1, projection='scatter_density')
-    density = ax.scatter_density(x, y, cmap=white_viridis)
-    fig.colorbar(density, label='Number of points per pixel')
-
+from scipy.stats import gaussian_kde
 
 plt.figure(figsize=(10, 5))
 plt.scatter(y_test, preds)
@@ -96,7 +78,7 @@ plt.ylabel('Predicted Values')
 plt.title('True vs Predicted Values')
 plt.savefig('true_vs_predicted_values.png')
 
-preds=preds.reshape(310163,1)
+preds=preds.reshape(131019,1)
 residuals = y_test - preds
 
 plt.figure(figsize=(10, 5))
@@ -116,12 +98,13 @@ r_squared = r2_score(y_test, preds)
 
 # Calculate point density
 xy = np.vstack([y_test, preds])
+z = gaussian_kde(xy)(xy)
 
 # Create a figure with two subplots
 fig, axs = plt.subplots(2, 1, figsize=(10, 12))
 
 # Plot True vs Predicted Values on the first subplot with colored points by density
-axs[0].scatter(y_test, preds, cmap='viridis')
+sc = axs[0].scatter(y_test, preds, c=z, cmap='viridis')
 axs[0].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linewidth=2)
 axs[0].set_xlabel('True Values')
 axs[0].set_ylabel('Predicted Values')
@@ -134,7 +117,7 @@ fig.colorbar(sc, ax=axs[0], label='Density')
 axs[0].annotate(f'R-squared = {r_squared:.2f}', xy=(0.05, 0.85), xycoords='axes fraction', fontsize=12)
 
 # Calculate residuals
-preds = preds.reshape(310163,1)
+preds = preds.reshape(131019,1)
 residuals = y_test - preds
 
 # Plot Distribution of Residuals on the second subplot
