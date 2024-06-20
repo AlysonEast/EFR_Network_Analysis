@@ -19,7 +19,7 @@ for (i in 2:length(files)){
 	print(files[i])
 }
 
-df$year<-as.numeric(substr(df$file, 15, 19))
+df$year<-substr(df$file, 15, 19)
 
 head(df)
 str(df)
@@ -44,6 +44,9 @@ png("./rplot.png", width=12, height=9, units="in", res=300)
 ggplot(df, aes(x=GPP, y=FW3, col=density), alpha=0.5) + geom_point() 
 dev.off()
 
+png("./rplot_wrap.png", width=12, height=9, units="in", res=300)
+ggplot(df, aes(x=GPP, y=FW3, col=density), alpha=0.5) + geom_point() + facet_wrap( ~ year)
+dev.off()
 #install.packages("rlang", repos="http://cran.us.r-project.org")
 #install.packages("caret", repos="http://cran.us.r-project.org")
 

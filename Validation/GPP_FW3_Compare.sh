@@ -4,9 +4,9 @@ export GISRC=/home/1te/.grassrc6.data
 
 MOVE_FW_DATA=0
 INGEST_FW3=0
-EXTRACT_DATA=0
+EXTRACT_DATA=1
 EXTRACT_DATA_FOR_FIT=0
-FIT_TO_MAP=1
+FIT_TO_MAP=0
 
 year0_weeks=( 30 1 23 15 38 8 )
 year1_weeks=( 8 30 1 38 15 23 )
@@ -15,8 +15,8 @@ year3_weeks=( 45 20 40 5 30 10 )
 year4_weeks=( 1 35 24 13 1 35 )
 year5_weeks=( 35 24 24 35 1 13 )
 
-data_path_a=../../../forwarn/net_ecological_impact/hnw_notprod/WNC2/
-data_path_b=../../../forwarn/net_ecological_impact/hnw_notprod2/WNC2/
+data_path_a=../../../forwarn/net_ecological_impact/hnw_notprod/newconus/
+data_path_b=../../../forwarn/net_ecological_impact/hnw_notprod2/newconus/
 
 
 if [ $MOVE_FW_DATA -eq 1 ]
@@ -31,10 +31,11 @@ then
                 w=$((${name}[$((y))]+1))
                 week=`cat ../GPP/keys/date_key_${cal_year}.txt | awk 'BEGIN {FS="|";} {print $3}' | sed -n "$((${w}))"p | tr "." "-"`
                                   
-		file=`ls ${data_path_a} ${data_path_b} | grep ${week} | grep auc$((p))yrdeparture.S3sum.LAEA.tiff`
+#		file=`ls ${data_path_a} ${data_path_b} | grep ${week} | grep auc$((p))yrdeparture.S3sum.LAEA.tiff`
+		file=`ls ${data_path_a} | grep ${week} | grep auc$((p))yrdeparture.S3sum.LAEA.tiff`
 		echo "copying ${file}"
 		cp ${data_path_a}${file} ../../../forwarn/GPP_Comparison/ 
-		cp ${data_path_b}${file} ../../../forwarn/GPP_Comparison/ 
+#		cp ${data_path_b}${file} ../../../forwarn/GPP_Comparison/ 
 		file_rename=`echo ${file} | tr "-" "."`
 		cd ../../../forwarn/GPP_Comparison/
 		mv ${file} ${file_rename}
@@ -59,8 +60,9 @@ then
  cd ../../../forwarn/GPP_Comparison
  mkdir ./proj/
  r.mask -r
+ r.mask ESA_GLOBCOVER maskcats=210 -i --o
  g.region rast=MODIS_EOY_AUC_2022
- g.region n=52:20:25.224106N s=18:15:45.899015N e=61:45:33.03282W w=130:39:52.018747W
+# g.region n=52:20:25.224106N s=18:15:45.899015N e=61:45:33.03282W w=130:39:52.018747W
 	for  f in *.tiff
 	do
 		echo "Processing $f file..."
@@ -74,8 +76,9 @@ fi
 if [ $EXTRACT_DATA -eq 1 ]
 then
  r.mask -r
+ r.mask ESA_GLOBCOVER maskcats=210 -i --o
  g.region rast=MODIS_EOY_AUC_2022
- g.region n=35:58:09.842772N s=34:37:09.473326N e=82:23:16.830797W w=84:34:16.48182W
+# g.region n=35:58:09.842772N s=34:37:09.473326N e=82:23:16.830797W w=84:34:16.48182W
  for ((y=0; y<6; y++)) do
 	cal_year=$((2023-$((y))))
 	echo "year is ${cal_year}"
@@ -91,7 +94,7 @@ then
 		FW=`ls ../../../forwarn/GPP_Comparison/ | grep ${week} | grep auc$((p))yrdeparture.S3sum.LAEA.tiff`	
 
 		#r.stats -1gn input= MODIS_${p}yr_AUC_wk${week}_${cal_year},${FW},phenology_2000-2016.100.maxmode | sort -R | head -n 100000>./samples/samples_${cal_year}_${p}yr_${week}
-		r.stats -1gn input=MODIS_${p}yr_AUC_wk${week}_${cal_year},${FW},phenology_2000-2016.100.maxmode>./samples/samples_${cal_year}_${p}yr_${week}
+		r.stats -1gn input=MODIS_${p}yr_AUC_wk${week}_${cal_year},${FW},phenology_2000-2016.100.maxmode,minint>./samples/samples_${cal_year}_${p}yr_${week}_wk${w}
 	done
  done
 fi

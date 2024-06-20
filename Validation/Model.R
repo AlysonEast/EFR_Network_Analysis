@@ -1,19 +1,32 @@
 #!/usr/bin/env Rscript
 
+phenoregions<-read.delim("./pheno100_univar.vect.out", sep="|",header=TRUE)
+str(phenoregions)
+phenoregions<-phenoregions[order(phenoregions$mean), ]
+
+phenoregions
+
+seq(1,100,10) 
+
 files<-list.files("./samples/", pattern="samples_*", full.names=TRUE)
 
 df<-read.delim(files[1], sep=" ",header=FALSE)
-colnames(df)<-c("lat","long","GPP","FW3","pheno")
+#input=MODIS_${p}yr_AUC_wk${week}_${cal_year},${FW},phenology_2000-2016.100.maxmode,minint>./samples/samples_${cal_year}_${p}yr_${week}
+colnames(df)<-c("lat","long","GPP","FW3","pheno","minint")
 df<-subset(df, FW3>0)
 df$file<-files[1]
 str(df)
 head(df)
 
+df <- df[sample(nrow(df), size=1000000), ]
+
+
 for (i in 2:length(files)){
 	temp<-read.delim(files[i], sep=" ",header=FALSE)
-	colnames(temp)<-c("lat","long","GPP","FW3","pheno")
+	colnames(temp)<-c("lat","long","GPP","FW3","pheno","minint")
 	temp<-subset(temp, FW3>0)
 	temp$file<-files[i]
+	temp <- temp[sample(nrow(temp), size=1000000), ]
 
 	df<-rbind(df, temp)
 	print(files[i])
@@ -21,7 +34,8 @@ for (i in 2:length(files)){
 
 df$year<-as.numeric(substr(df$file, 20, 23))
 df$product<-as.numeric(substr(df$file, 25, 25))
-df$date<-substr(df$file, 29, nchar(df$file))
+df$week<-as.numeric(substr(df$file, 42, nchar(df$file)))
+df$week<-(df$week-1)
 
 head(df)
 str(df)
@@ -35,12 +49,30 @@ dim(df)
 
 df<-subset(df, GPP>0)
 
-df$pct<-
+table(df$pheno)
+
+df$pct<-((2020-(df$year-(df$product+1)))/(df$product+1))
+df$pct<-ifelse(df$pct<0, paste0(0), paste0(df$pct))
+df$pct<-ifelse(df$pct>1, paste0(1), paste0(df$pct))
+
+table(df$pct)
+head(df)
+
+lower<-seq(1,100,10)
+upper<-seq(10,100,10)
+
+for (i in 1:10) {
+	list<-phenoregions[lower[i]:upper[i],1]
+	print(list)
+	output<-df[df$pheno %in% list,]
+
+	write.csv(output[,c(3,4,5,6,9,10,11)], paste0("./xgboost_samples/chunk10/samples_chunk",i,".csv"), row.names=FALSE)
+}
 
 
-write.csv(df[,c(3,4,5,7,8)], "./samples_wnc.csv", row.names=FALSE)
-
-
+for (i in 1:100) {
+	write.csv(subset(df, pheno==i)[,c(3,4,5,6,9,10,11)], paste0("./xgboost_samples/indv100/pheno_",i,".csv"), row.names=FALSE)
+}
 library(ggplot2)
 
 #png("./rplot.png", width=9, height=9, units="in", res=300)
