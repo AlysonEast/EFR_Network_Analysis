@@ -21,16 +21,20 @@ warnings.filterwarnings("ignore")
 
 # Create an empty DataFrame to store model output values
 results_df = pd.DataFrame(columns=['file_name', 'sample_size', 'r_squared', 'rmse', 'variable_importance'])
-
 # Get list of files in directory
-file_directory = "./xgboost_samples/indv100/"
+file_directory = "./xgboost_samples/chunk10/Seq/"
 file_list = os.listdir(file_directory)
+
+preds_df = pd.DataFrame(columns=['file_name', 'y_test', 'preds'])
 
 # Iterate over each file
 for file_name in file_list:
     if file_name.endswith('.csv'):
         # Load data from file
         df = pd.read_csv(os.path.join(file_directory, file_name))
+
+        # Convert "pheno" column to categorical
+        df['pheno'] = df['pheno'].astype('category')
 
         print(df.head())
         print(df.shape)
@@ -71,9 +75,10 @@ for file_name in file_list:
            dtrain=dtrain_reg,
            num_boost_round=n,
         )
+
         # Save model file with unique name
         model_filename = os.path.splitext(file_name)[0] + "_model.json"
-        model.save_model(os.path.join('./models_100indv/', model_filename))
+        model.save_model(os.path.join('./models_10chunk/Seq/', model_filename))
 
         preds = model.predict(dtest_reg)
 
@@ -83,31 +88,33 @@ for file_name in file_list:
         # Calculate R-squared value
         r_squared = r2_score(y_test, preds)
 
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(4, 4))
         plt.scatter(y_test, preds)
         plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linewidth=2)
         plt.xlabel('True Values')
         plt.ylabel('Predicted Values')
         plt.title('True vs Predicted Values')
+        plt.xlim(0,200000)
+        plt.ylim(0,200000)
         plt.annotate(f'R-squared = {r_squared:.2f}', xy=(0.05, 0.85), xycoords='axes fraction', fontsize=12)
-        plt.savefig(os.path.join('./figures_100indv/', os.path.splitext(file_name)[0] + '_true_vs_predicted_values.png'))
+        plt.savefig(os.path.join('./figures_10chunk/Seq/', os.path.splitext(file_name)[0] + '_true_vs_predicted_values.png'))
         plt.close()
 
         preds = preds.reshape(len(y_test), 1)
         residuals = y_test - preds
         
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(4, 4))
         plt.hist(residuals, bins=50)
         plt.xlabel('Residual')
         plt.ylabel('Frequency')
         plt.title('Distribution of Residuals')
-        plt.xlim(-40000, 40000)
-        plt.savefig(os.path.join('./figures_100indv/', os.path.splitext(file_name)[0] + '_distribution_of_residuals.png'))
+        plt.xlim(-40000,40000)
+        plt.savefig(os.path.join('./figures_10chunk/Seq/', os.path.splitext(file_name)[0] + '_distribution_of_residuals.png'))
         plt.close()
 
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(4, 4))
         ax = plot_importance(model)
-        plt.savefig(os.path.join('./figures_100indv/', os.path.splitext(file_name)[0] + 'Var_Loadings.png'))
+        plt.savefig(os.path.join('./figures_10chunk/Seq/', os.path.splitext(file_name)[0] + 'Var_Loadings.png'))
         plt.close()
 
         # Get the feature importances from the model
@@ -125,6 +132,33 @@ for file_name in file_list:
         })
 
         results_df = pd.concat([results_df, new_row], ignore_index=True)
-# Save the results DataFrame to a CSV file
-results_df.to_csv('./model_100inv_results.csv', index=False)
 
+        add = pd.DataFrame({
+            'file_name': [file_name] * len(y_test),
+            'y_test': y_test.values.flatten(),
+            'preds': preds.flatten()
+        })
+
+        preds_df = pd.concat([preds_df, add], ignore_index=True)
+
+# Calculate overall RMSE and R-squared from preds_df
+overall_rmse = mean_squared_error(preds_df['y_test'], preds_df['preds'], squared=False)
+overall_r_squared = r2_score(preds_df['y_test'], preds_df['preds'])
+
+print(f"Overall RMSE: {overall_rmse:.3f}")
+print(f"Overall R-squared: {overall_r_squared:.3f}")
+
+# Append overall RMSE and R-squared to preds_df
+overall_metrics = pd.DataFrame({
+    'file_name': ['Overall'],
+    'y_test': [np.nan],
+    'preds': [np.nan],
+    'rmse': [overall_rmse],
+    'r_squared': [overall_r_squared]
+})
+
+results_df = pd.concat([results_df, overall_metrics], ignore_index=True)
+
+# Save the results DataFrame to a CSV file
+results_df.to_csv('./model_Seq_10chunk_results.csv', index=False)
+preds_df.to_csv('./model_Seq_10chunk_preds.csv', index=False)

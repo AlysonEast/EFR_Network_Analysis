@@ -66,9 +66,15 @@ for (i in 1:10) {
 	print(list)
 	output<-df[df$pheno %in% list,]
 
-	write.csv(output[,c(3,4,5,6,9,10,11)], paste0("./xgboost_samples/chunk10/samples_chunk",i,".csv"), row.names=FALSE)
+	write.csv(output[,c(3,4,5,6,9,10,11)], paste0("./xgboost_samples/chunk10/AUC/samples_AUC_chunk",i,".csv"), row.names=FALSE)
 }
 
+for (i in 1:10) {
+	list<-c(lower[i]:upper[i])
+	output<-df[df$pheno %in% list,]
+
+	write.csv(output[,c(3,4,5,6,9,10,11)], paste0("./xgboost_samples/chunk10/Seq/samples_Seq_chunk",i,".csv"), row.names=FALSE)
+}
 
 for (i in 1:100) {
 	write.csv(subset(df, pheno==i)[,c(3,4,5,6,9,10,11)], paste0("./xgboost_samples/indv100/pheno_",i,".csv"), row.names=FALSE)

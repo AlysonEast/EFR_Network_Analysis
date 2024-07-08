@@ -2,8 +2,9 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-year=2023
+year=2015
 
+g.region rast=MODIS_wholeyear_AUC_2023 --o
 r.mask -r
 
 #make sure this still works after date changes 
