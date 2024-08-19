@@ -2,7 +2,7 @@
 
 export GISRC=/home/1te/.grassrc6.data
 
-year=2015
+year=2023
 
 g.region rast=MODIS_wholeyear_AUC_2023 --o
 r.mask -r

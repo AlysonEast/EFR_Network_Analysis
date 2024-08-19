@@ -9,6 +9,8 @@ preds$chunk<-as.numeric(substr(preds$file_name,18,(nchar(preds$file_name)-4)))
 
 table(preds$chunk)
 
+sqrt(mean((preds$y_test - preds$preds)^2))
+
 library(viridis)
 library(ggplot2)
 
@@ -28,8 +30,8 @@ p1<-ggplot(preds) + geom_point(aes(x=y_test, y=preds, color=log(d)), size=0.1, a
   scale_color_viridis() +
   theme_bw() + theme(legend.position = "none") +
   xlab("Actual") + ylab("Predicted") +
-  scale_x_continuous(expand=c(0,0)) +
-  scale_y_continuous(expand=c(0,0)) +
+  scale_x_continuous(expand=c(0,0), breaks=seq(0, 200000, 50000), labels=seq(0,20,5)) +
+  scale_y_continuous(expand=c(0,0), breaks=seq(0, 200000, 50000), labels=seq(0,20,5)) +
   geom_abline(intercept = 0, slope = 1)
 #dev.off()
 
@@ -39,19 +41,20 @@ for (i in 1:10){
 	preds[preds$chunk==i,]$model_d<-get_density(preds[preds$chunk==i,]$y_test, preds[preds$chunk==i,]$preds, n=100)
 }
 
-#png(file="./scatter_densityi_wrap.png",width=10, height=4, units="in", res=300)
+png(file="./scatter_densityi_wrap.png",width=10, height=4, units="in", res=300)
 p2<-ggplot(preds) + geom_point(aes(x=y_test, y=preds, color=log(model_d)), size=0.1, alpha=0.5) + 
   scale_color_viridis() +
   theme_bw() + theme(legend.position = "none") +
-  xlab("Actual") + ylab("Predicted") +
+  xlab("Actual GPP (kg C/sq m)") + ylab("Predicted GPP (kg C/sq m)") +
   geom_abline(intercept = 0, slope = 1) + 
-  scale_x_continuous(expand=c(0,0)) +
-  scale_y_continuous(expand=c(0,0)) +
-  facet_wrap(.~chunk, ncol=1)
-#dev.off()
+  scale_x_continuous(expand=c(0,0), breaks=seq(0, 200000, 50000), labels=seq(0,20,5)) +
+  scale_y_continuous(expand=c(0,0), breaks=seq(0, 200000, 50000), labels=seq(0,20,5)) +
+  facet_wrap(.~chunk, nrow=2)
+p2
+dev.off()
 
 png(file="./scatter_density_full_and_cunks.png",width=10, height=10, units="in", res=300)
-grid.arrange(p1,p2,ncol=2)
+grid.arrange(p1,p2, nrow=3)
 dev.off()
 
 #print("first two plots done")

@@ -84,6 +84,7 @@ fi
 
 
 
+g.region rast=${aucdeparturephenosum0yrfile}
 if [ $MOVE_DATA_TO_MAPSET -eq 1 ]
 then
  r.mask -r
